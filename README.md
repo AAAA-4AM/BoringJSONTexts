@@ -1,12 +1,48 @@
-# React + Vite
+# Boring JSON Texts
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, minimal, and responsive web app to beautify, format, and analyze any JSON text—no matter how boring, minified, or escaped it is.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Paste or type any JSON** (minified, escaped, or messy)
+- **Instant beautification** with proper indentation and line breaks
+- **Copy** beautified or minified JSON with one click
+- **Side-by-side comparison** of original and formatted JSON
+- **Line-by-line breakdown** with individual copy buttons
+- **Text statistics**: word, character, line, object, and array counts
+- **Mobile-first, responsive design**
+- **Custom scrollbars** and modern UI
+- **Built with React, Tailwind CSS, and Framer Motion**
 
-## Expanding the ESLint configuration
+## Usage
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. **Paste** your JSON text into the input area.
+2. Instantly see the beautified output, stats, and breakdowns.
+3. **Copy** the formatted or minified JSON, or any line, with a single click.
+
+## Example Inputs
+
+- Minified JSON:  
+  `{"name":"John","age":30,"city":"New York"}`
+- Escaped JSON string:  
+  `"{\\"message\\":\\"Hello World\\",\\"status\\":\\"success\\"}"`
+
+## Live Demo
+
+> Coming soon!
+
+## Development
+
+```bash
+npm install
+npm run dev
+```
+
+## Credits
+
+- Made by [FourAM](https://fouram.adityasrivastava.me/)
+- Powered by [React](https://react.dev/) & [Tailwind CSS](https://tailwindcss.com/)
+
+---
+
+_Boring JSON Texts — because even boring data deserves a beautiful view!_
