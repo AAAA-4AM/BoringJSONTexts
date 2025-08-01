@@ -1,0 +1,366 @@
+import React from "react";
+import "./App.css"; // Assuming you have a CSS file for styles
+import Footer from "./Footer";
+
+const App = () => {
+  const [inputText, setInputText] = React.useState("");
+  const [formattedText, setFormattedText] = React.useState("");
+
+  const formatText = (text) => {
+    if (!text.trim()) return "";
+
+    let formattedText = text;
+    let isValidJSON = false;
+    let jsonData = null;
+
+    // Try to parse as JSON first
+    try {
+      jsonData = JSON.parse(text);
+      isValidJSON = true;
+      formattedText = JSON.stringify(jsonData, null, 2);
+    } catch (e) {
+      // If not valid JSON, try to handle escaped JSON string
+      try {
+        // Remove outer quotes if present and unescape
+        let cleanText = text.trim();
+        if (
+          (cleanText.startsWith('"') && cleanText.endsWith('"')) ||
+          (cleanText.startsWith("'") && cleanText.endsWith("'"))
+        ) {
+          cleanText = cleanText.slice(1, -1);
+        }
+
+        // Replace escape sequences
+        cleanText = cleanText
+          .replace(/\\n/g, "\n")
+          .replace(/\\t/g, "\t")
+          .replace(/\\r/g, "\r")
+          .replace(/\\"/g, '"')
+          .replace(/\\'/g, "'")
+          .replace(/\\\\/g, "\\");
+
+        // Try parsing the cleaned text as JSON
+        jsonData = JSON.parse(cleanText);
+        isValidJSON = true;
+        formattedText = JSON.stringify(jsonData, null, 2);
+      } catch (e2) {
+        // If still not JSON, just clean up escape sequences for regular text
+        formattedText = text
+          .replace(/\\n/g, "\n")
+          .replace(/\\t/g, "\t")
+          .replace(/\\r/g, "\r")
+          .replace(/\\"/g, '"')
+          .replace(/\\'/g, "'")
+          .replace(/\\\\/g, "\\");
+      }
+    }
+
+    // Count statistics
+    const lines = formattedText.split("\n");
+    const wordCount = formattedText
+      .trim()
+      .split(/\s+/)
+      .filter((word) => word.length > 0).length;
+    const characterCount = formattedText.length;
+    const lineCount = lines.length;
+
+    // For JSON, count objects and arrays
+    let objectCount = 0;
+    let arrayCount = 0;
+    if (isValidJSON) {
+      const jsonString = JSON.stringify(jsonData);
+      objectCount = (jsonString.match(/{/g) || []).length;
+      arrayCount = (jsonString.match(/\[/g) || []).length;
+    }
+
+    return {
+      originalText: text,
+      formattedText,
+      isValidJSON,
+      jsonData,
+      wordCount,
+      characterCount,
+      lineCount,
+      objectCount,
+      arrayCount,
+      lines: lines.filter((line) => line.trim() !== ""),
+    };
+  };
+
+  const handleTextChange = (e) => {
+    const newText = e.target.value;
+    setInputText(newText);
+    setFormattedText(formatText(newText));
+  };
+
+  // State for copy confirmations
+  const [copyStatus, setCopyStatus] = React.useState({
+    formatted: false,
+    minified: false,
+    lines: {},
+  });
+
+  const copyToClipboard = (text, type = "formatted", lineIndex = null) => {
+    navigator.clipboard.writeText(text);
+    if (type === "formatted") {
+      setCopyStatus((prev) => ({ ...prev, formatted: true }));
+      setTimeout(
+        () => setCopyStatus((prev) => ({ ...prev, formatted: false })),
+        1200
+      );
+    } else if (type === "minified") {
+      setCopyStatus((prev) => ({ ...prev, minified: true }));
+      setTimeout(
+        () => setCopyStatus((prev) => ({ ...prev, minified: false })),
+        1200
+      );
+    } else if (type === "line" && lineIndex !== null) {
+      setCopyStatus((prev) => ({
+        ...prev,
+        lines: { ...prev.lines, [lineIndex]: true },
+      }));
+      setTimeout(
+        () =>
+          setCopyStatus((prev) => ({
+            ...prev,
+            lines: { ...prev.lines, [lineIndex]: false },
+          })),
+        1200
+      );
+    }
+  };
+
+  return (
+    <div className="App">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-950 to-gray-800 py-6 px-1 flex items-center justify-center">
+        <div className="w-full max-w-3xl mx-auto px-2 sm:px-4 md:px-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-blue-400 tracking-tight drop-shadow text-center md:text-left">
+              Boring JSON Formatter{" "}
+              <span className="text-indigo-300">&amp; Beautifier</span>
+            </h1>
+          </div>
+
+          {/* Input Section */}
+          <div className="bg-gradient-to-br from-blue-950 to-gray-900 rounded-2xl shadow-2xl p-4 sm:p-6 md:p-8 mb-8 border border-blue-900">
+            <label className="block text-lg sm:text-xl font-bold text-blue-200 mb-3 sm:mb-4 tracking-wide">
+              Paste or Type Your JSON Text
+            </label>
+            <textarea
+              className="w-full min-h-[120px] h-36 sm:h-44 border-2 border-blue-800 rounded-xl p-3 sm:p-4 focus:border-blue-400 focus:outline-none resize-vertical font-mono text-sm sm:text-base bg-gray-950 text-blue-100 placeholder:text-blue-400 shadow-inner transition"
+              placeholder='e.g. {"name":"John","age":30} or escaped JSON strings'
+              value={inputText}
+              onChange={handleTextChange}
+            />
+            <div className="flex justify-end mt-2">
+              <span className="text-xs text-blue-400">
+                Supports minified, escaped, or messy JSON
+              </span>
+            </div>
+          </div>
+
+          {/* Output Section */}
+          {formattedText && (
+            <div className="space-y-6 sm:space-y-8">
+              {/* Statistics */}
+              <div className="bg-gradient-to-br from-blue-950 to-gray-900 rounded-2xl shadow-xl p-8 border border-blue-900">
+                <h2 className="text-2xl font-bold text-blue-200 mb-6 tracking-wide">
+                  {formattedText.isValidJSON
+                    ? "JSON Statistics"
+                    : "Text Statistics"}
+                </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                  <div className="text-center p-4 bg-blue-950 rounded-xl border border-blue-900">
+                    <div className="text-3xl font-extrabold text-blue-400">
+                      {formattedText.wordCount}
+                    </div>
+                    <div className="text-xs text-blue-200 mt-1">Words</div>
+                  </div>
+                  <div className="text-center p-4 bg-blue-950 rounded-xl border border-blue-900">
+                    <div className="text-3xl font-extrabold text-green-400">
+                      {formattedText.characterCount}
+                    </div>
+                    <div className="text-xs text-green-200 mt-1">
+                      Characters
+                    </div>
+                  </div>
+                  <div className="text-center p-4 bg-blue-950 rounded-xl border border-blue-900">
+                    <div className="text-3xl font-extrabold text-yellow-300">
+                      {formattedText.lineCount}
+                    </div>
+                    <div className="text-xs text-yellow-100 mt-1">Lines</div>
+                  </div>
+                  {formattedText.isValidJSON ? (
+                    <div className="text-center p-4 bg-blue-950 rounded-xl border border-blue-900">
+                      <div className="text-3xl font-extrabold text-purple-300">
+                        {formattedText.objectCount + formattedText.arrayCount}
+                      </div>
+                      <div className="text-xs text-purple-100 mt-1">
+                        Objects/Arrays
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center p-4 bg-blue-950 rounded-xl border border-blue-900">
+                      <div className="text-sm font-bold text-red-400">
+                        Not Valid JSON
+                      </div>
+                      <div className="text-xs text-red-200">Text Format</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Formatted Output */}
+              <div className="bg-gradient-to-br from-gray-950 to-blue-950 rounded-2xl shadow-xl p-8 border border-blue-900">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+                  <h2 className="text-2xl font-bold text-blue-200 tracking-wide">
+                    {formattedText.isValidJSON
+                      ? "Beautified JSON"
+                      : "Formatted Text"}
+                  </h2>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() =>
+                        copyToClipboard(
+                          formattedText.formattedText,
+                          "formatted"
+                        )
+                      }
+                      className={`px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold shadow flex items-center gap-2`}
+                    >
+                      {copyStatus.formatted ? (
+                        <>
+                          <span className="inline-block w-4 h-4 bg-green-400 rounded-full mr-1 border-2 border-green-700 flex-shrink-0"></span>
+                          Copied!
+                        </>
+                      ) : (
+                        <>Copy Formatted</>
+                      )}
+                    </button>
+                    {formattedText.isValidJSON && (
+                      <button
+                        onClick={() =>
+                          copyToClipboard(
+                            JSON.stringify(formattedText.jsonData),
+                            "minified"
+                          )
+                        }
+                        className={`px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold shadow flex items-center gap-2`}
+                      >
+                        {copyStatus.minified ? (
+                          <>
+                            <span className="inline-block w-4 h-4 bg-green-400 rounded-full mr-1 border-2 border-green-700 flex-shrink-0"></span>
+                            Copied!
+                          </>
+                        ) : (
+                          <>Copy Minified</>
+                        )}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              <div className="p-3 sm:p-4 bg-gray-950 rounded-xl border border-blue-900 overflow-auto max-h-60 sm:max-h-96">
+                <pre className="text-green-300 text-sm sm:text-base font-mono whitespace-pre-wrap">
+                  {formattedText.formattedText}
+                </pre>
+              </div>
+              </div>
+
+              {/* Original vs Formatted Comparison */}
+              <div className="bg-gradient-to-br from-blue-950 to-gray-900 rounded-2xl shadow-xl p-8 border border-blue-900">
+                <h2 className="text-2xl font-bold text-blue-200 mb-6 tracking-wide">
+                  Before & After Comparison
+                </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                  <div>
+                    <h3 className="text-sm font-semibold text-blue-300 mb-2">
+                      Original (Unformatted)
+                    </h3>
+                    <div className="p-2 sm:p-3 bg-gray-950 rounded-xl border border-blue-900 max-h-24 sm:max-h-40 overflow-auto">
+                      <pre className="text-red-300 text-xs font-mono whitespace-pre-wrap break-all">
+                        {formattedText.originalText}
+                      </pre>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-green-300 mb-2">
+                      Formatted
+                    </h3>
+                    <div className="p-2 sm:p-3 bg-gray-950 rounded-xl border border-blue-900 max-h-24 sm:max-h-40 overflow-auto">
+                      <pre className="text-green-300 text-xs font-mono whitespace-pre-wrap">
+                        {formattedText.formattedText}
+                      </pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Line by Line View */}
+              {formattedText.lines.length > 1 && (
+                <div className="bg-gradient-to-br from-gray-950 to-blue-950 rounded-2xl shadow-xl p-8 border border-blue-900">
+                  <h2 className="text-2xl font-bold text-blue-200 mb-6 tracking-wide">
+                    Line by Line Breakdown
+                  </h2>
+                <div className="space-y-2 max-h-40 sm:max-h-60 overflow-auto">
+                    {formattedText.lines.map((line, index) => (
+                      <div
+                        key={index}
+                        className="flex items-start space-x-2 sm:space-x-3 p-1 sm:p-2 hover:bg-blue-950 rounded-xl border border-blue-900"
+                      >
+                        <span className="text-xs font-mono text-blue-400 w-6 sm:w-8 flex-shrink-0">
+                          {index + 1}
+                        </span>
+                        <code className="text-xs sm:text-sm font-mono text-blue-100 flex-1 break-all">
+                          {line}
+                        </code>
+                        <button
+                          onClick={() => copyToClipboard(line, "line", index)}
+                          className={`text-xs flex items-center gap-1 flex-shrink-0 px-1 sm:px-2 py-1 rounded transition-colors ${
+                            copyStatus.lines[index]
+                              ? "bg-green-600 text-white"
+                              : "text-blue-400 hover:text-blue-200"
+                          }`}
+                        >
+                          {copyStatus.lines[index] ? (
+                            <span className="inline-block w-3 h-3 bg-green-400 rounded-full border-2 border-green-700"></span>
+                          ) : null}
+                          {copyStatus.lines[index] ? "Copied!" : "Copy"}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!inputText.trim() && (
+          <div className="bg-gradient-to-br from-blue-950 to-gray-900 rounded-2xl shadow-xl p-8 sm:p-12 text-center border border-blue-900">
+              <div className="text-blue-900 text-4xl sm:text-6xl mb-4">🔧</div>
+              <h3 className="text-xl sm:text-2xl font-bold text-blue-200 mb-2">
+                Paste Your JSON Text to Format!
+              </h3>
+              <p className="text-blue-400 mb-3 sm:mb-4">
+                Works with minified JSON, escaped JSON strings, or any messy
+                JSON format
+              </p>
+              <div className="text-xs sm:text-sm text-blue-300 space-y-1">
+                <p>Examples:</p>
+                <code className="block bg-gray-950 p-1 sm:p-2 rounded text-xs border border-blue-900 text-blue-100">
+                  {`{"name":"John","age":30,"city":"New York"}`}
+                </code>
+                <code className="block bg-gray-950 p-1 sm:p-2 rounded text-xs border border-blue-900 text-blue-100">
+                  {`"{\\"message\\":\\"Hello World\\",\\"status\\":\\"success\\"}"`}
+                </code>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+      <Footer />
+    </div>
+  );
+};
+
+export default App;
