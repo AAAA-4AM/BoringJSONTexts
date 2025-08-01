@@ -45,4 +45,4 @@ npm run dev
 
 ---
 
-_Boring JSON Texts — because even boring data deserves a beautiful view!_
+_Boring JSON Texts — (avoid booooring texts)_
