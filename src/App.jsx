@@ -1,6 +1,7 @@
 import React from "react";
 import "./App.css"; // Assuming you have a CSS file for styles
 import Footer from "./Footer";
+import GoToTopButton from "./components/GoToTopButton";
 
 const App = () => {
   const [inputText, setInputText] = React.useState("");
@@ -132,8 +133,9 @@ const App = () => {
 
   return (
     <div className="App">
+      <GoToTopButton />
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-950 to-gray-800 py-6 px-1 flex items-center justify-center">
-        <div className="w-full max-w-3xl mx-auto px-2 sm:px-4 md:px-6">
+        <div className="w-full max-w-4xl mx-auto px-2 sm:px-4 md:px-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
             <h1 className="text-3xl sm:text-4xl font-extrabold text-blue-400 tracking-tight drop-shadow text-center md:text-left">
               Boring JSON Formatter{" "}
@@ -169,7 +171,7 @@ const App = () => {
                     ? "JSON Statistics"
                     : "Text Statistics"}
                 </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
                   <div className="text-center p-4 bg-blue-950 rounded-xl border border-blue-900">
                     <div className="text-3xl font-extrabold text-blue-400">
                       {formattedText.wordCount}
@@ -226,7 +228,7 @@ const App = () => {
                           "formatted"
                         )
                       }
-                      className={`px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold shadow flex items-center gap-2`}
+                      className={`px-4 py-2 bg-blue-600 text-white hover:rounded-2xl rounded-lg hover:bg-blue-700 transition-all font-semibold shadow flex items-center gap-2`}
                     >
                       {copyStatus.formatted ? (
                         <>
@@ -245,7 +247,7 @@ const App = () => {
                             "minified"
                           )
                         }
-                        className={`px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold shadow flex items-center gap-2`}
+                        className={`px-4 py-2 bg-green-600 text-white rounded-lg hover:rounded-2xl hover:bg-green-700 transition-all font-semibold shadow flex items-center gap-2`}
                       >
                         {copyStatus.minified ? (
                           <>
@@ -259,11 +261,11 @@ const App = () => {
                     )}
                   </div>
                 </div>
-              <div className="p-3 sm:p-4 bg-gray-950 rounded-xl border border-blue-900 overflow-auto max-h-60 sm:max-h-96">
-                <pre className="text-green-300 text-sm sm:text-base font-mono whitespace-pre-wrap">
-                  {formattedText.formattedText}
-                </pre>
-              </div>
+                <div className="p-3 sm:p-4 bg-gray-950 rounded-xl border border-blue-900 overflow-auto max-h-60 sm:max-h-96">
+                  <pre className="text-green-300 text-sm sm:text-base font-mono whitespace-pre-wrap">
+                    {formattedText.formattedText}
+                  </pre>
+                </div>
               </div>
 
               {/* Original vs Formatted Comparison */}
@@ -271,7 +273,7 @@ const App = () => {
                 <h2 className="text-2xl font-bold text-blue-200 mb-6 tracking-wide">
                   Before & After Comparison
                 </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                   <div>
                     <h3 className="text-sm font-semibold text-blue-300 mb-2">
                       Original (Unformatted)
@@ -301,7 +303,7 @@ const App = () => {
                   <h2 className="text-2xl font-bold text-blue-200 mb-6 tracking-wide">
                     Line by Line Breakdown
                   </h2>
-                <div className="space-y-2 max-h-40 sm:max-h-60 overflow-auto">
+                  <div className="space-y-2 max-h-40 sm:max-h-60 overflow-auto">
                     {formattedText.lines.map((line, index) => (
                       <div
                         key={index}
@@ -315,15 +317,12 @@ const App = () => {
                         </code>
                         <button
                           onClick={() => copyToClipboard(line, "line", index)}
-                          className={`text-xs flex items-center gap-1 flex-shrink-0 px-1 sm:px-2 py-1 rounded transition-colors ${
+                          className={`text-xs flex items-center gap-1 flex-shrink-0 px-1 min-w-12 text-center sm:px-2 py-1 rounded transition-colors ${
                             copyStatus.lines[index]
                               ? "bg-green-600 text-white"
                               : "text-blue-400 hover:text-blue-200"
                           }`}
                         >
-                          {copyStatus.lines[index] ? (
-                            <span className="inline-block w-3 h-3 bg-green-400 rounded-full border-2 border-green-700"></span>
-                          ) : null}
                           {copyStatus.lines[index] ? "Copied!" : "Copy"}
                         </button>
                       </div>
@@ -336,7 +335,7 @@ const App = () => {
 
           {/* Empty State */}
           {!inputText.trim() && (
-          <div className="bg-gradient-to-br from-blue-950 to-gray-900 rounded-2xl shadow-xl p-8 sm:p-12 text-center border border-blue-900">
+            <div className="bg-gradient-to-br from-blue-950 to-gray-900 rounded-2xl shadow-xl p-8 sm:p-12 text-center border border-blue-900">
               <div className="text-blue-900 text-4xl sm:text-6xl mb-4">🔧</div>
               <h3 className="text-xl sm:text-2xl font-bold text-blue-200 mb-2">
                 Paste Your JSON Text to Format!
