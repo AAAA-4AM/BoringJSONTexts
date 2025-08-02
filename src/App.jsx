@@ -131,9 +131,42 @@ const App = () => {
     }
   };
 
+  // State for expanded beautified JSON panel
+  const [isExpanded, setIsExpanded] = React.useState(false);
+
   return (
     <div className="App">
       <GoToTopButton />
+      {/* Expanded Beautified JSON Modal */}
+      {isExpanded && formattedText && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 bg-opacity-70">
+          <div className="relative w-full max-w-3xl mx-auto bg-gradient-to-br from-gray-950 to-blue-950 rounded-2xl shadow-2xl border-2 border-blue-900 p-6 sm:p-10 flex flex-col">
+            <button
+              onClick={() => setIsExpanded(false)}
+              className="absolute top-4 right-4 px-3 py-1 bg-blue-800 text-white rounded-lg hover:bg-blue-700 font-semibold shadow transition-all text-sm flex items-center gap-1"
+              aria-label="Minimize"
+            >
+              <svg
+                width="18"
+                height="18"
+                fill="none"
+                viewBox="0 0 20 20"
+                className="inline-block"
+              >
+                <rect x="4" y="9" width="12" height="2" rx="1" fill="#a5b4fc" />
+              </svg>
+            </button>
+            <h2 className="text-2xl font-bold text-blue-200 mb-6 tracking-wide text-center">
+              Beautified JSON
+            </h2>
+            <div className="flex-1 overflow-auto p-2 sm:p-4 bg-gray-950 rounded-xl border border-blue-900 max-h-[70vh]">
+              <pre className="text-green-300 text-base sm:text-lg font-mono whitespace-pre-wrap">
+                {formattedText.formattedText}
+              </pre>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-950 to-gray-800 py-6 px-1 flex items-center justify-center">
         <div className="w-full max-w-4xl mx-auto px-2 sm:px-4 md:px-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
@@ -213,7 +246,7 @@ const App = () => {
               </div>
 
               {/* Formatted Output */}
-              <div className="bg-gradient-to-br from-gray-950 to-blue-950 rounded-2xl shadow-xl p-8 border border-blue-900">
+              <div className="bg-gradient-to-br from-gray-950 to-blue-950 rounded-2xl shadow-xl p-8 border border-blue-900 relative">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
                   <h2 className="text-2xl font-bold text-blue-200 tracking-wide">
                     {formattedText.isValidJSON
@@ -259,6 +292,39 @@ const App = () => {
                         )}
                       </button>
                     )}
+                    {/* Expand Button */}
+                    <button
+                      onClick={() => setIsExpanded(true)}
+                      className="px-3 py-2 bg-blue-900 text-blue-200 rounded-lg hover:rounded-4xl hover:bg-blue-800 transition-all font-semibold shadow flex items-center gap-1 border border-blue-700 text-sm"
+                      aria-label="Expand Beautified JSON"
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        fill="none"
+                        viewBox="0 0 20 20"
+                        className="inline-block"
+                      >
+                        <rect
+                          x="4"
+                          y="4"
+                          width="12"
+                          height="12"
+                          rx="2"
+                          stroke="#a5b4fc"
+                          strokeWidth="2"
+                          fill="none"
+                        />
+                        <rect
+                          x="7"
+                          y="7"
+                          width="6"
+                          height="6"
+                          rx="1"
+                          fill="#a5b4fc"
+                        />
+                      </svg>
+                    </button>
                   </div>
                 </div>
                 <div className="p-3 sm:p-4 bg-gray-950 rounded-xl border border-blue-900 overflow-auto max-h-60 sm:max-h-96">
