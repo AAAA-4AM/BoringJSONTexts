@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 export default function Footer() {
   return (
     <motion.footer
-      className="py-4 px-2 sm:px-8 flex flex-col md:flex-row items-center md:justify-between gap-4 md:gap-6 bg-gradient-to-r from-gray-900 via-blue-950 to-gray-800 text-gray-300 border-t border-indigo-900 w-full"
+      className="py-4 px-2 sm:px-8 flex flex-col md:flex-row items-center md:justify-between gap-4 md:gap-6 bg-gradient-to-r from-gray-900 via-blue-950 to-gray-800 text-gray-300 border-t border-indigo-800 w-full"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay: 0.5, duration: 0.5 }}
