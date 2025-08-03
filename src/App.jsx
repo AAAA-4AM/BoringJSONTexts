@@ -186,19 +186,10 @@ const App = () => {
               value={inputText}
               onChange={handleTextChange}
             />
-            <div className="flex justify-end mt-2">
-              <span className="text-xs text-blue-400">
-                Supports minified, escaped, or messy JSON
-              </span>
-            </div>
-          </div>
-
-          {/* Output Section */}
-          {formattedText && (
-            <div className="space-y-6 sm:space-y-8">
+            <div className="flex justify-between items-center mt-2 px-1">
               {/* Graph Toggle Checkbox */}
               {formattedText.isValidJSON && (
-                <div className="flex items-center mb-4">
+                <div className="flex items-center">
                   <label
                     htmlFor="show-graph"
                     className="flex items-center cursor-pointer select-none"
@@ -220,6 +211,15 @@ const App = () => {
                   </label>
                 </div>
               )}
+              <span className="text-xs text-blue-400">
+                Supports minified, escaped, or messy JSON
+              </span>
+            </div>
+          </div>
+
+          {/* Output Section */}
+          {formattedText && (
+            <div className="space-y-6 sm:space-y-8">
               {/* Statistics */}
               <div className="bg-gradient-to-br from-blue-950 to-gray-900 rounded-2xl shadow-xl p-8 border border-blue-900">
                 <h2 className="text-2xl font-bold text-blue-200 mb-6 tracking-wide">
