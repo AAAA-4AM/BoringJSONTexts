@@ -1,65 +1,95 @@
-import React from "react";
+const JsonTreeView = ({ data }) => {
+  if (!data || typeof data !== "object") return null;
 
-// Tree node component
-const TreeNode = ({ label, value, isArray, isLast, level }) => {
-  const isObject = typeof value === "object" && value !== null;
-  return (
-    <div className="relative pl-4">
-      {/* Vertical line for tree branch */}
-      {level > 0 && (
-        <span
-          className={`absolute left-0 top-0 h-full w-4 border-l-2 ${
-            isLast ? "border-transparent" : "border-blue-800"
-          } border-blue-800`}
-          style={{ borderStyle: "dashed" }}
-        ></span>
-      )}
-      <div className="flex items-center gap-2">
-        <span className="font-mono text-xs text-blue-300 font-bold">
-          {label}
-        </span>
-        {isObject ? (
-          <span className="text-purple-300 font-mono text-xs">
-            {Array.isArray(value) ? "[ ]" : "{ }"}
-          </span>
-        ) : (
-          <span className="text-green-300 font-mono text-xs">
-            = {JSON.stringify(value)}
-          </span>
+  // Tree node component to recursively render JSON structure
+  const TreeNode = ({ label, value, depth = 0, isLast = false }) => {
+    const isObject = value !== null && typeof value === "object";
+    const isArray = Array.isArray(value);
+
+    // Calculate indent based on depth
+    const indent = depth * 16;
+
+    return (
+      <div className="relative" style={{ marginLeft: `${indent}px` }}>
+        {/* Vertical line connecting to parent (except for root) */}
+        {depth > 0 && (
+          <div
+            className="absolute border-l-2 border-indigo-500/50 border-dashed h-full"
+            style={{ left: "-16px", top: "0" }}
+          />
         )}
-      </div>
-      {/* Children */}
-      {isObject && (
-        <div className="ml-4 border-l-2 border-blue-800 pl-2">
-          {Object.entries(value).map(([k, v], idx, arr) => (
+
+        {/* Horizontal line connecting to node */}
+        {depth > 0 && (
+          <div
+            className="absolute border-t-2 border-indigo-500/50 w-4"
+            style={{ left: "-16px", top: "12px" }}
+          />
+        )}
+
+        <div className="flex items-start py-1">
+          {/* Node Content */}
+          <div
+            className={`rounded-md px-3 py-1 ${
+              isObject ? "bg-blue-900/30" : "bg-purple-900/30"
+            } border border-blue-700/50`}
+          >
+            {/* Label */}
+            <span className="font-mono text-sm font-medium text-blue-300">
+              {label}{" :"}
+            </span>
+
+            {/* Value display for primitives */}
+            {!isObject ? (
+              <span
+                className={`ml-2 font-mono text-sm ${
+                  value === null
+                    ? "text-gray-400"
+                    : typeof value === "string"
+                    ? "text-green-300"
+                    : typeof value === "number"
+                    ? "text-yellow-300"
+                    : typeof value === "boolean"
+                    ? "text-purple-300"
+                    : "text-gray-300"
+                }`}
+              >
+                {value === null
+                  ? "null"
+                  : typeof value === "string"
+                  ? `"${value}"`
+                  : String(value)}
+              </span>
+            ) : (
+              <span className="ml-2 font-mono text-xs text-indigo-400">
+                {isArray ? "[ ]" : "{ }"}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Render children for objects and arrays */}
+        {isObject &&
+          Object.entries(value).map(([key, val], index, arr) => (
             <TreeNode
-              key={k}
-              label={Array.isArray(value) ? `[${k}]` : k}
-              value={v}
-              isArray={Array.isArray(value)}
-              isLast={idx === arr.length - 1}
-              level={level + 1}
+              key={key}
+              label={isArray ? `[${key}]` : key}
+              value={val}
+              depth={depth + 1}
+              isLast={index === arr.length - 1}
             />
           ))}
-        </div>
-      )}
-    </div>
-  );
-};
+      </div>
+    );
+  };
 
-const JsonGraphView = ({ data }) => {
-  if (!data || typeof data !== "object") return null;
   return (
-    <div className="flex flex-col items-start w-full overflow-auto">
-      <TreeNode
-        label="root"
-        value={data}
-        isArray={Array.isArray(data)}
-        isLast={true}
-        level={0}
-      />
+    <div className="bg-gray-950/50 rounded-lg border border-blue-900 p-4 overflow-auto max-h-full">
+      <div className="pl-4">
+        <TreeNode label="root" value={data} />
+      </div>
     </div>
   );
 };
 
-export default JsonGraphView;
+export default JsonTreeView;

@@ -10,8 +10,11 @@ export default function Footer() {
       animate={{ opacity: 1 }}
       transition={{ delay: 0.5, duration: 0.5 }}
     >
-      <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-4 w-full md:w-auto text-center md:text-left">
-        <a href="/" className="font-bold text-blue-400 hover:underline text-base sm:text-lg">
+      <div className="flex flex-col not-md:justify-center sm:flex-row items-center gap-1 sm:gap-4 w-full md:w-auto text-center md:text-left">
+        <a
+          href="/"
+          className="font-bold text-blue-400 hover:underline text-base sm:text-lg"
+        >
           Boring JSON Texts
         </a>
         <span className="hidden sm:inline text-gray-500">|</span>
