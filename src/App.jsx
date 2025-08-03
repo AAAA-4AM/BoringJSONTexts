@@ -1,7 +1,10 @@
 import React from "react";
 import "./App.css"; // Assuming you have a CSS file for styles
 import Footer from "./Footer";
+
 import GoToTopButton from "./components/GoToTopButton";
+import JsonGraphView from "./components/JsonGraphView";
+import { Copy, Check, Minimize2, Expand, X, ArrowUpToLine } from "lucide-react";
 
 const App = () => {
   const [inputText, setInputText] = React.useState("");
@@ -134,8 +137,12 @@ const App = () => {
   // State for expanded beautified JSON panel
   const [isExpanded, setIsExpanded] = React.useState(false);
 
+  // State for graph visualization toggle
+  const [showGraph, setShowGraph] = React.useState(false);
+
   return (
     <div className="App">
+      {/* Go to Top Button replaced with Lucide icon */}
       <GoToTopButton />
       {/* Expanded Beautified JSON Modal */}
       {isExpanded && formattedText && (
@@ -143,18 +150,10 @@ const App = () => {
           <div className="relative w-full max-w-3xl mx-auto bg-gradient-to-br from-gray-950 to-blue-950 rounded-2xl shadow-2xl border-2 border-blue-900 p-6 sm:p-10 flex flex-col">
             <button
               onClick={() => setIsExpanded(false)}
-              className="absolute top-4 right-4 px-3 py-1 bg-blue-800 text-white rounded-lg hover:bg-blue-700 font-semibold shadow transition-all text-sm flex items-center gap-1"
+              className="absolute top-4 right-4 bg-blue-800 text-white rounded-lg hover:rounded-4xl px-3 py-1 hover:py-2 hover:bg-blue-700 font-semibold shadow transition-all text-sm flex items-center gap-1"
               aria-label="Minimize"
             >
-              <svg
-                width="18"
-                height="18"
-                fill="none"
-                viewBox="0 0 20 20"
-                className="inline-block"
-              >
-                <rect x="4" y="9" width="12" height="2" rx="1" fill="#a5b4fc" />
-              </svg>
+              <Minimize2 size={18} className="inline-block text-blue-200" />
             </button>
             <h2 className="text-2xl font-bold text-blue-200 mb-6 tracking-wide text-center">
               Beautified JSON
@@ -182,7 +181,7 @@ const App = () => {
               Paste or Type Your JSON Text
             </label>
             <textarea
-              className="w-full min-h-[120px] h-36 sm:h-44 border-2 border-blue-800 rounded-xl p-3 sm:p-4 focus:border-blue-400 focus:outline-none resize-vertical font-mono text-sm sm:text-base bg-gray-950 text-blue-100 placeholder:text-blue-400 shadow-inner transition"
+              className="w-full min-h-[120px] h-36 resize-none sm:h-44 border-2 border-blue-800 rounded-xl p-3 sm:p-4 focus:border-blue-400 focus:outline-none resize-vertical font-mono text-sm sm:text-base bg-gray-950 text-blue-100 placeholder:text-blue-400 shadow-inner transition"
               placeholder='e.g. {"name":"John","age":30} or escaped JSON strings'
               value={inputText}
               onChange={handleTextChange}
@@ -197,6 +196,30 @@ const App = () => {
           {/* Output Section */}
           {formattedText && (
             <div className="space-y-6 sm:space-y-8">
+              {/* Graph Toggle Checkbox */}
+              {formattedText.isValidJSON && (
+                <div className="flex items-center mb-4">
+                  <label
+                    htmlFor="show-graph"
+                    className="flex items-center cursor-pointer select-none"
+                  >
+                    <div className="relative">
+                      <input
+                        id="show-graph"
+                        type="checkbox"
+                        checked={showGraph}
+                        onChange={(e) => setShowGraph(e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-blue-900 rounded-full peer border-2 border-blue-700 transition-all duration-200 peer-checked:bg-blue-600"></div>
+                      <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-md transition-all duration-200 peer-checked:translate-x-5"></div>
+                    </div>
+                    <span className="ml-3 text-blue-200 text-sm font-medium">
+                      Show Tree Visualization
+                    </span>
+                  </label>
+                </div>
+              )}
               {/* Statistics */}
               <div className="bg-gradient-to-br from-blue-950 to-gray-900 rounded-2xl shadow-xl p-8 border border-blue-900">
                 <h2 className="text-2xl font-bold text-blue-200 mb-6 tracking-wide">
@@ -261,15 +284,18 @@ const App = () => {
                           "formatted"
                         )
                       }
-                      className={`px-4 py-2 bg-blue-600 text-white hover:rounded-2xl rounded-lg hover:bg-blue-700 transition-all font-semibold shadow flex items-center gap-2`}
+                      className={`px-3 hover:px-4 py-2 bg-blue-600 text-white hover:rounded-2xl rounded-lg hover:bg-blue-700 transition-all font-semibold shadow flex items-center gap-2`}
                     >
                       {copyStatus.formatted ? (
                         <>
-                          <span className="inline-block w-4 h-4 bg-green-400 rounded-full mr-1 border-2 border-green-700 flex-shrink-0"></span>
+                          <Check size={18} className="text-green-400 mr-1" />
                           Copied!
                         </>
                       ) : (
-                        <>Copy Formatted</>
+                        <>
+                          <Copy size={18} className="text-blue-200 mr-1" />
+                          Copy Formatted
+                        </>
                       )}
                     </button>
                     {formattedText.isValidJSON && (
@@ -280,50 +306,31 @@ const App = () => {
                             "minified"
                           )
                         }
-                        className={`px-4 py-2 bg-green-600 text-white rounded-lg hover:rounded-2xl hover:bg-green-700 transition-all font-semibold shadow flex items-center gap-2`}
+                        className={`px-3 hover:px-4 py-2 bg-green-600 text-white rounded-lg hover:rounded-2xl hover:bg-green-700 transition-all font-semibold shadow flex items-center gap-2`}
                       >
                         {copyStatus.minified ? (
                           <>
-                            <span className="inline-block w-4 h-4 bg-green-400 rounded-full mr-1 border-2 border-green-700 flex-shrink-0"></span>
+                            <Check size={18} className="text-green-400 mr-1" />
                             Copied!
                           </>
                         ) : (
-                          <>Copy Minified</>
+                          <>
+                            <Copy size={18} className="text-green-200 mr-1" />
+                            Copy Minified
+                          </>
                         )}
                       </button>
                     )}
                     {/* Expand Button */}
                     <button
                       onClick={() => setIsExpanded(true)}
-                      className="px-3 py-2 bg-blue-900 text-blue-200 rounded-lg hover:rounded-4xl hover:bg-blue-800 transition-all font-semibold shadow flex items-center gap-1 border border-blue-700 text-sm"
+                      className="bg-blue-900 text-blue-200 ease rounded-lg hover:rounded-4xl px-3 py-2 hover:px-4 hover:bg-blue-800 transition-all font-semibold shadow flex items-center gap-1 border border-blue-700 text-sm"
                       aria-label="Expand Beautified JSON"
                     >
-                      <svg
-                        width="18"
-                        height="18"
-                        fill="none"
-                        viewBox="0 0 20 20"
-                        className="inline-block"
-                      >
-                        <rect
-                          x="4"
-                          y="4"
-                          width="12"
-                          height="12"
-                          rx="2"
-                          stroke="#a5b4fc"
-                          strokeWidth="2"
-                          fill="none"
-                        />
-                        <rect
-                          x="7"
-                          y="7"
-                          width="6"
-                          height="6"
-                          rx="1"
-                          fill="#a5b4fc"
-                        />
-                      </svg>
+                      <Expand
+                        size={18}
+                        className="inline-block text-blue-200"
+                      />
                     </button>
                   </div>
                 </div>
@@ -333,6 +340,48 @@ const App = () => {
                   </pre>
                 </div>
               </div>
+
+              {/* JSON Tree Visualization as right-side panel */}
+              {showGraph && formattedText.isValidJSON && (
+                <div>
+                  {/* Overlay panel with slide-in animation */}
+                  <div className="fixed inset-0 z-40 flex">
+                    {/* Backdrop for focus */}
+                    <div
+                      className="flex-1 bg-black/40"
+                      onClick={() => setShowGraph(false)}
+                    ></div>
+                    <div
+                      className="h-full w-full md:w-3/5 bg-gradient-to-br from-blue-950 to-gray-900 border-l-2 border-blue-900 shadow-2xl flex flex-col p-0 m-0 transform transition-transform duration-500 ease-in-out translate-x-full md:translate-x-0"
+                      style={{
+                        maxWidth: "100vw",
+                        right: 0,
+                        position: "fixed",
+                        top: 0,
+                        zIndex: 50,
+                        boxShadow: "rgba(0,0,0,0.4) -8px 0 32px",
+                      }}
+                    >
+                      <div className="flex items-center justify-between px-6 py-4 border-b border-blue-900 bg-blue-950/80">
+                        <span className="font-bold text-blue-200 text-lg">
+                          JSON Tree Visualization
+                        </span>
+                        <button
+                          className="px-3 py-1 bg-blue-800 text-white rounded-lg hover:bg-blue-700 font-semibold shadow transition-all text-sm flex items-center gap-1"
+                          onClick={() => setShowGraph(false)}
+                          aria-label="Close Tree Visualization"
+                        >
+                          <X size={18} className="inline-block text-blue-200" />
+                          Close
+                        </button>
+                      </div>
+                      <div className="flex-1 overflow-auto p-6">
+                        <JsonGraphView data={formattedText.jsonData} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Original vs Formatted Comparison */}
               <div className="bg-gradient-to-br from-blue-950 to-gray-900 rounded-2xl shadow-xl p-8 border border-blue-900">
@@ -383,13 +432,16 @@ const App = () => {
                         </code>
                         <button
                           onClick={() => copyToClipboard(line, "line", index)}
-                          className={`text-xs flex items-center gap-1 flex-shrink-0 px-1 min-w-12 text-center sm:px-2 py-1 rounded transition-colors ${
-                            copyStatus.lines[index]
-                              ? "bg-green-600 text-white"
-                              : "text-blue-400 hover:text-blue-200"
-                          }`}
+                          className="text-xs cursor-pointer flex items-center gap-1 flex-shrink-0 px-1 text-center sm:px-2 py-1 rounded transition-colors"
                         >
-                          {copyStatus.lines[index] ? "Copied!" : "Copy"}
+                          {copyStatus.lines[index] ? (
+                            <Check size={14} className="text-green-500" />
+                          ) : (
+                            <Copy
+                              size={14}
+                              className="text-blue-200 hover:text-blue-400"
+                            />
+                          )}
                         </button>
                       </div>
                     ))}

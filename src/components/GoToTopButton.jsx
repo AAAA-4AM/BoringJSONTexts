@@ -1,3 +1,4 @@
+import { ArrowUp } from "lucide-react";
 import React from "react";
 
 const GoToTopButton = () => {
@@ -24,21 +25,7 @@ const GoToTopButton = () => {
       aria-label="Go to top"
       style={{ boxShadow: "0 4px 24px 0 rgba(0,0,0,0.25)" }}
     >
-      <svg
-        width="20"
-        height="20"
-        fill="none"
-        viewBox="0 0 20 20"
-        className="inline-block"
-      >
-        <path
-          d="M10 15V5M10 5l-5 5M10 5l5 5"
-          stroke="#a5b4fc"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
+      <ArrowUp className="w-5 h-5" />
     </button>
   );
 };
