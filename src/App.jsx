@@ -187,6 +187,9 @@ const App = () => {
               onChange={handleTextChange}
             />
             <div className="flex justify-between items-center mt-2 px-1">
+              <span className="text-xs text-blue-400">
+                Supports minified, escaped, or messy JSON
+              </span>
               {/* Graph Toggle Checkbox */}
               {formattedText.isValidJSON && (
                 <div className="flex items-center">
@@ -211,9 +214,6 @@ const App = () => {
                   </label>
                 </div>
               )}
-              <span className="text-xs text-blue-400">
-                Supports minified, escaped, or messy JSON
-              </span>
             </div>
           </div>
 

@@ -32,7 +32,7 @@ export default function Footer() {
           height={28}
           className=""
         />
-        <span className="text-xs text-indigo-300">
+        <span className="text-xs text-blue-300">
           Powered by <span className="text-gray-100">FourAM</span>
         </span>
       </a>
