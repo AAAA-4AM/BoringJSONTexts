@@ -3,7 +3,7 @@ import "./App.css"; // Assuming you have a CSS file for styles
 import Footer from "./Footer";
 
 import GoToTopButton from "./components/GoToTopButton";
-import JsonGraphView from "./components/JsonGraphView";
+import JsonGraphView from "./components/JsonTreeView";
 import { Copy, Check, Minimize2, Expand, X, ArrowUpToLine } from "lucide-react";
 
 const App = () => {
@@ -344,15 +344,21 @@ const App = () => {
               {/* JSON Tree Visualization as right-side panel */}
               {showGraph && formattedText.isValidJSON && (
                 <div>
-                  {/* Overlay panel with slide-in animation */}
+                  {/* Overlay*/}
                   <div className="fixed inset-0 z-40 flex">
-                    {/* Backdrop for focus */}
                     <div
                       className="flex-1 bg-black/40"
                       onClick={() => setShowGraph(false)}
-                    ></div>
+                    />
+                    <button
+                      className="px-3 absolute top-6 left-10 py-2 hover:top-5 hover:py-3 hover:rounded-4xl bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-semibold shadow transition-all ease text-sm flex items-center gap-1"
+                      onClick={() => setShowGraph(false)}
+                      aria-label="Close Tree Visualization"
+                    >
+                      <X size={18} className="inline-block text-blue-200" />
+                    </button>
                     <div
-                      className="h-full w-full md:w-3/5 bg-gradient-to-br from-blue-950 to-gray-900 border-l-2 border-blue-900 shadow-2xl flex flex-col p-0 m-0 transform transition-transform duration-500 ease-in-out translate-x-full md:translate-x-0"
+                      className="h-full w-full md:w-3/4 bg-gradient-to-br from-blue-950 to-gray-900 border-l-2 border-blue-900 shadow-2xl flex flex-col p-0 m-0 transform transition-transform duration-500 ease-in-out translate-x-full md:translate-x-0"
                       style={{
                         maxWidth: "100vw",
                         right: 0,
@@ -366,14 +372,6 @@ const App = () => {
                         <span className="font-bold text-blue-200 text-lg">
                           JSON Tree Visualization
                         </span>
-                        <button
-                          className="px-3 py-1 bg-blue-800 text-white rounded-lg hover:bg-blue-700 font-semibold shadow transition-all text-sm flex items-center gap-1"
-                          onClick={() => setShowGraph(false)}
-                          aria-label="Close Tree Visualization"
-                        >
-                          <X size={18} className="inline-block text-blue-200" />
-                          Close
-                        </button>
                       </div>
                       <div className="flex-1 overflow-auto p-6">
                         <JsonGraphView data={formattedText.jsonData} />
