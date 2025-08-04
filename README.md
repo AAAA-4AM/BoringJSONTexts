@@ -46,3 +46,9 @@ npm run dev
 ---
 
 _Boring JSON Texts — (avoid booooring texts)_
+
+## 📝 License
+
+This project is closed source. Contact for suggestions and contributions.
+
+**Made with ❤️ for developers who value great documentation**
