@@ -1,14 +1,31 @@
 import React from "react";
-import "./App.css"; // Assuming you have a CSS file for styles
+import "./App.css";
 import Footer from "./Footer";
-
+import { motion, AnimatePresence } from "framer-motion";
 import GoToTopButton from "./components/GoToTopButton";
-import JsonTreeView from "./components/TreeForm";
-import { Copy, Check, Minimize2, Expand, X, ArrowUpToLine } from "lucide-react";
+import JsonTreeView from "./components/JsonGraphView";
+import {
+  Copy,
+  Check,
+  Minimize2,
+  Expand,
+  X,
+  ArrowUpToLine,
+  FileText,
+  Zap,
+  BarChart3,
+  Eye,
+  Code,
+  Settings,
+} from "lucide-react";
 
 const App = () => {
   const [inputText, setInputText] = React.useState("");
   const [formattedText, setFormattedText] = React.useState("");
+  // State for expanded beautified JSON panel
+  const [isExpanded, setIsExpanded] = React.useState(false);
+  // State for graph visualization toggle
+  const [showGraph, setShowGraph] = React.useState(false);
 
   const formatText = (text) => {
     if (!text.trim()) return "";
@@ -134,68 +151,151 @@ const App = () => {
     }
   };
 
-  // State for expanded beautified JSON panel
-  const [isExpanded, setIsExpanded] = React.useState(false);
-
-  // State for graph visualization toggle
-  const [showGraph, setShowGraph] = React.useState(true);
-
   return (
     <div className="App">
-      {/* Go to Top Button replaced with Lucide icon */}
-      <GoToTopButton />
-      {/* Expanded Beautified JSON Modal */}
-      {isExpanded && formattedText && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 bg-opacity-70">
-          <div className="relative w-full max-w-3xl mx-auto bg-gradient-to-br from-gray-950 to-blue-950 rounded-2xl shadow-2xl border-2 border-blue-900 p-6 sm:p-10 flex flex-col">
-            <button
-              onClick={() => setIsExpanded(false)}
-              className="absolute top-4 right-4 bg-blue-800 text-white rounded-lg hover:rounded-4xl px-3 py-1 hover:py-2 hover:bg-blue-700 font-semibold shadow transition-all text-sm flex items-center gap-1"
-              aria-label="Minimize"
-            >
-              <Minimize2 size={18} className="inline-block text-blue-200" />
-            </button>
-            <h2 className="text-2xl font-bold text-blue-200 mb-6 tracking-wide text-center">
-              Beautified JSON
-            </h2>
-            <div className="flex-1 overflow-auto p-2 sm:p-4 bg-gray-950 rounded-xl border border-blue-900 max-h-[70vh]">
-              <pre className="text-green-300 text-base sm:text-lg font-mono whitespace-pre-wrap">
-                {formattedText.formattedText}
-              </pre>
-            </div>
-          </div>
-        </div>
-      )}
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-950 to-gray-800 py-6 px-1 flex items-center justify-center">
-        <div className="w-full max-w-4xl mx-auto px-2 sm:px-4 md:px-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-blue-400 tracking-tight drop-shadow text-center md:text-left">
-              Boring JSON Formatter{" "}
-              <span className="text-indigo-300">&amp; Beautifier</span>
-            </h1>
-          </div>
+      {/* Go to Top Button with animation */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 1, type: "spring", stiffness: 200 }}
+      >
+        <GoToTopButton />
+      </motion.div>
 
-          {/* Input Section */}
-          <div className="bg-gradient-to-br from-blue-950 to-gray-900 rounded-2xl shadow-2xl p-4 sm:p-6 md:p-8 mb-8 border border-blue-900">
-            <label className="block text-lg sm:text-xl font-bold text-blue-200 mb-3 sm:mb-4 tracking-wide">
+      {/* Expanded Beautified JSON Modal with Framer Motion */}
+      <AnimatePresence>
+        {isExpanded && formattedText && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <motion.div
+              className="relative w-full max-w-4xl mx-auto bg-gradient-to-br from-gray-950/95 to-blue-950/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-blue-800/50 p-6 sm:p-10 flex flex-col"
+              initial={{ scale: 0.8, opacity: 0, y: 50 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.8, opacity: 0, y: 50 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              <motion.button
+                onClick={() => setIsExpanded(false)}
+                className="absolute top-4 right-4 bg-red-600/20 hover:bg-red-600/40 text-red-300 hover:text-red-100 rounded-full p-3 font-semibold shadow-lg transition-all duration-300 flex items-center gap-1 border border-red-500/30"
+                aria-label="Close"
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <X size={20} />
+              </motion.button>
+              <motion.h2
+                className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-6 tracking-wide text-center"
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                <FileText
+                  className="inline-block mr-3 text-blue-400"
+                  size={32}
+                />
+                Beautified JSON
+              </motion.h2>
+              <motion.div
+                className="flex-1 overflow-auto p-4 bg-gray-950/70 backdrop-blur-sm rounded-2xl border border-blue-900/50 max-h-[70vh] shadow-inner"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                <pre className="text-green-300 text-base sm:text-lg font-mono whitespace-pre-wrap">
+                  {formattedText.formattedText}
+                </pre>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-950 to-indigo-950 py-6 px-1 flex items-center justify-center relative overflow-hidden">
+        {/* Animated background elements */}
+        <motion.div
+          className="absolute inset-0 opacity-20"
+          animate={{
+            background: [
+              "radial-gradient(circle at 20% 50%, #3b82f6 0%, transparent 50%)",
+              "radial-gradient(circle at 80% 20%, #8b5cf6 0%, transparent 50%)",
+              "radial-gradient(circle at 40% 80%, #06b6d4 0%, transparent 50%)",
+            ],
+          }}
+          transition={{ duration: 8, repeat: Infinity, repeatType: "reverse" }}
+        />
+
+        <motion.div
+          className="w-full max-w-6xl mx-auto px-2 sm:px-4 md:px-6 relative z-10"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <motion.div
+            className="flex flex-col md:flex-row md:items-center md:justify-between mt-16 gap-4"
+            initial={{ opacity: 0, y: -30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+          >
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+              <h1 className="text-3xl sm:text-4xl font-extrabold text-blue-400 tracking-tight drop-shadow text-center md:text-left">
+                <Code className="inline-block mr-3 text-blue-400" size={48} />
+                Boring JSON Formatter{" "}
+                <span className="text-indigo-300">&amp; Beautifier</span>
+              </h1>
+            </div>
+          </motion.div>
+
+          {/* Input Section with animations */}
+          <motion.div
+            className="bg-gradient-to-br from-blue-950/80 to-gray-900/80 backdrop-blur-xl rounded-3xl shadow-2xl p-6 sm:p-8 md:p-10 mb-8 border border-blue-800/50"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.6 }}
+          >
+            <motion.label
+              className="flex text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-300 to-cyan-300 bg-clip-text text-transparent mb-4 tracking-wide items-center gap-3"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 1 }}
+            >
+              <Zap className="text-blue-400" size={28} />
               Paste or Type Your JSON Text
-            </label>
-            <textarea
-              className="w-full min-h-[120px] h-36 resize-none sm:h-44 border-2 border-blue-800 rounded-xl p-3 sm:p-4 focus:border-blue-400 focus:outline-none resize-vertical font-mono text-sm sm:text-base bg-gray-950 text-blue-100 placeholder:text-blue-400 shadow-inner transition"
+            </motion.label>
+            <motion.textarea
+              className="w-full min-h-[120px] h-36 resize-none sm:h-44 border-2 border-blue-700/50 rounded-2xl p-4 sm:p-5 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400/20 resize-vertical font-mono text-sm sm:text-base bg-gray-950/70 backdrop-blur-sm text-blue-100 placeholder:text-blue-400/70 shadow-inner transition-all duration-300"
               placeholder='e.g. {"name":"John","age":30} or escaped JSON strings'
               value={inputText}
               onChange={handleTextChange}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 1.2, duration: 0.4 }}
+              whileFocus={{ scale: 1.02 }}
             />
-            <div className="flex justify-between items-center mt-2 px-1">
-              <span className="text-xs text-blue-400">
+            <motion.div
+              className="flex justify-between items-center mt-4 px-1"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.4 }}
+            >
+              <span className="text-sm text-blue-400/80 flex items-center gap-2">
+                <Settings size={16} />
                 Supports minified, escaped, or messy JSON
               </span>
-              {/* Graph Toggle Checkbox */}
+              {/* Enhanced Graph Toggle */}
               {formattedText.isValidJSON && (
-                <div className="flex items-center">
+                <motion.div
+                  className="flex items-center"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1.6 }}
+                >
                   <label
                     htmlFor="show-graph"
-                    className="flex items-center cursor-pointer select-none"
+                    className="flex items-center cursor-pointer select-none group"
                   >
                     <div className="relative">
                       <input
@@ -205,78 +305,140 @@ const App = () => {
                         onChange={(e) => setShowGraph(e.target.checked)}
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-blue-900 rounded-full peer border-2 border-blue-700 transition-all duration-200 peer-checked:bg-blue-600"></div>
-                      <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-md transition-all duration-200 peer-checked:translate-x-5"></div>
+                      <motion.div
+                        className="w-12 h-7 bg-blue-900/50 rounded-full peer border-2 border-blue-700/50 transition-all duration-300 peer-checked:bg-gradient-to-r peer-checked:from-blue-600 peer-checked:to-purple-600 peer-checked:border-purple-500/50"
+                        whileTap={{ scale: 0.95 }}
+                      />
+                      <motion.div
+                        className="absolute left-1 top-1 w-5 h-5 bg-white rounded-full shadow-lg transition-all duration-300 peer-checked:translate-x-5 peer-checked:bg-gradient-to-r peer-checked:from-blue-100 peer-checked:to-purple-100"
+                        layout
+                      />
                     </div>
-                    <span className="ml-3 text-blue-200 text-sm font-medium">
+                    <span className="ml-3 text-blue-200 text-sm font-medium group-hover:text-blue-100 transition-colors flex items-center gap-2">
                       Show Tree Visualization
                     </span>
                   </label>
-                </div>
+                </motion.div>
               )}
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
-          {/* Output Section */}
+          {/* Output Section with animations */}
           {formattedText && (
-            <div className="space-y-6 sm:space-y-8">
-              {/* Statistics */}
-              <div className="bg-gradient-to-br from-blue-950 to-gray-900 rounded-2xl shadow-xl p-8 border border-blue-900">
-                <h2 className="text-2xl font-bold text-blue-200 mb-6 tracking-wide">
+            <motion.div
+              className="space-y-6 sm:space-y-8"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.6 }}
+            >
+              {/* Enhanced Statistics Section */}
+              <motion.div
+                className="bg-gradient-to-br from-blue-950/80 to-gray-900/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-blue-800/50"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.7, duration: 0.5 }}
+              >
+                <motion.h2
+                  className="text-3xl font-bold bg-gradient-to-r from-blue-300 to-purple-300 bg-clip-text text-transparent mb-8 tracking-wide flex items-center gap-3"
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.9 }}
+                >
+                  <BarChart3 className="text-blue-400" size={32} />
                   {formattedText.isValidJSON
                     ? "JSON Statistics"
                     : "Text Statistics"}
-                </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-                  <div className="text-center p-4 bg-blue-950 rounded-xl border border-blue-900">
-                    <div className="text-3xl font-extrabold text-blue-400">
-                      {formattedText.wordCount}
-                    </div>
-                    <div className="text-xs text-blue-200 mt-1">Words</div>
-                  </div>
-                  <div className="text-center p-4 bg-blue-950 rounded-xl border border-blue-900">
-                    <div className="text-3xl font-extrabold text-green-400">
-                      {formattedText.characterCount}
-                    </div>
-                    <div className="text-xs text-green-200 mt-1">
-                      Characters
-                    </div>
-                  </div>
-                  <div className="text-center p-4 bg-blue-950 rounded-xl border border-blue-900">
-                    <div className="text-3xl font-extrabold text-yellow-300">
-                      {formattedText.lineCount}
-                    </div>
-                    <div className="text-xs text-yellow-100 mt-1">Lines</div>
-                  </div>
-                  {formattedText.isValidJSON ? (
-                    <div className="text-center p-4 bg-blue-950 rounded-xl border border-blue-900">
-                      <div className="text-3xl font-extrabold text-purple-300">
-                        {formattedText.objectCount + formattedText.arrayCount}
+                </motion.h2>
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                  {[
+                    {
+                      value: formattedText.wordCount,
+                      label: "Words",
+                      color: "blue",
+                    },
+                    {
+                      value: formattedText.characterCount,
+                      label: "Characters",
+                      color: "green",
+                    },
+                    {
+                      value: formattedText.lineCount,
+                      label: "Lines",
+                      color: "yellow",
+                    },
+                    {
+                      value: formattedText.isValidJSON
+                        ? formattedText.objectCount + formattedText.arrayCount
+                        : "Not JSON",
+                      label: formattedText.isValidJSON
+                        ? "Objects/Arrays"
+                        : "JSON",
+                      color: "red",
+                    },
+                  ].map((stat, index) => (
+                    <motion.div
+                      key={index}
+                      className={`text-center p-6 bg-gradient-to-br from-${stat.color}-800 to-gray-950/60 backdrop-blur-sm rounded-2xl border border-${stat.color}-700 hover:border-${stat.color}-600 transition-all duration-300 group cursor-pointer`}
+                      initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{
+                        delay: 0,
+                        duration: 0.1,
+                        type: "spring",
+                      }}
+                      whileHover={{ scale: 1.05, y: -5 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <motion.div
+                        className={`text-4xl font-extrabold text-${stat.color}-400 group-hover:text-${stat.color}-300 transition-colors`}
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{
+                          delay: stat.delay + 0.2,
+                          type: "spring",
+                          stiffness: 200,
+                        }}
+                      >
+                        {typeof stat.value === "number"
+                          ? stat.value.toLocaleString()
+                          : stat.value}
+                      </motion.div>
+                      <div
+                        className={`text-xs text-${stat.color}-200 mt-2 group-hover:text-${stat.color}-100 transition-colors`}
+                      >
+                        {stat.label}
                       </div>
-                      <div className="text-xs text-purple-100 mt-1">
-                        Objects/Arrays
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-center p-4 bg-blue-950 rounded-xl border border-blue-900">
-                      <div className="text-sm font-bold text-red-400">
-                        Not Valid JSON
-                      </div>
-                      <div className="text-xs text-red-200">Text Format</div>
-                    </div>
-                  )}
+                    </motion.div>
+                  ))}
                 </div>
-              </div>
+              </motion.div>
 
-              {/* Formatted Output */}
-              <div className="bg-gradient-to-br from-gray-950 to-blue-950 rounded-2xl shadow-xl p-8 border border-blue-900 relative">
+              {/* Enhanced Formatted Output Section */}
+              <motion.div
+                className="bg-gradient-to-br from-gray-950/80 to-blue-950/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-blue-800/50 relative overflow-hidden"
+                initial={{ opacity: 0, x: -40 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 1.5, duration: 0.6 }}
+              >
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
-                  <h2 className="text-2xl font-bold text-blue-200 tracking-wide">
+                  <motion.h2
+                    className="text-3xl font-bold bg-gradient-to-r from-blue-300 to-green-300 bg-clip-text text-blue-400 tracking-wide flex items-center gap-3"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 1.7 }}
+                  >
+                    <FileText className="text-blue-400" size={32} />
                     {formattedText.isValidJSON
                       ? "Beautified JSON"
                       : "Formatted Text"}
-                  </h2>
-                  <div className="flex gap-2">
+                  </motion.h2>
+                  <motion.div
+                    className="flex gap-3"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 1.9 }}
+                  >
+                    {/* Copy formatted button */}
                     <button
                       onClick={() =>
                         copyToClipboard(
@@ -298,6 +460,8 @@ const App = () => {
                         </>
                       )}
                     </button>
+
+                    {/* copy minified button */}
                     {formattedText.isValidJSON && (
                       <button
                         onClick={() =>
@@ -321,6 +485,7 @@ const App = () => {
                         )}
                       </button>
                     )}
+
                     {/* Expand Button */}
                     <button
                       onClick={() => setIsExpanded(true)}
@@ -332,14 +497,19 @@ const App = () => {
                         className="inline-block text-blue-200"
                       />
                     </button>
-                  </div>
+                  </motion.div>
                 </div>
-                <div className="p-3 sm:p-4 bg-gray-950 rounded-xl border border-blue-900 overflow-auto max-h-60 sm:max-h-96">
+                <motion.div
+                  className="p-6 bg-gray-950/70 backdrop-blur-sm rounded-2xl border border-blue-900/50 overflow-auto max-h-60 sm:max-h-96 shadow-inner"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 2.1 }}
+                >
                   <pre className="text-green-300 text-sm sm:text-base font-mono whitespace-pre-wrap">
                     {formattedText.formattedText}
                   </pre>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
 
               {/* JSON Tree Visualization as right-side panel */}
               {showGraph && formattedText.isValidJSON && (
@@ -446,32 +616,71 @@ const App = () => {
                   </div>
                 </div>
               )}
-            </div>
+            </motion.div>
           )}
 
-          {/* Empty State */}
+          {/* Empty State with animation */}
           {!inputText.trim() && (
-            <div className="bg-gradient-to-br from-blue-950 to-gray-900 rounded-2xl shadow-xl p-8 sm:p-12 text-center border border-blue-900">
-              <div className="text-blue-900 text-4xl sm:text-6xl mb-4">🔧</div>
-              <h3 className="text-xl sm:text-2xl font-bold text-blue-200 mb-2">
+            <motion.div
+              className="bg-gradient-to-br from-blue-950/80 to-gray-900/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 sm:p-12 text-center border border-blue-800/50"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.6 }}
+            >
+              <motion.div
+                className="text-6xl sm:text-8xl mb-6"
+                animate={{
+                  rotate: [0, 10, -10, 0],
+                  scale: [1, 1.1, 1],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                }}
+              >
+                🔧
+              </motion.div>
+              <motion.h3
+                className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-300 to-purple-300 bg-clip-text text-transparent mb-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
+              >
                 Paste Your JSON Text to Format!
-              </h3>
-              <p className="text-blue-400 mb-3 sm:mb-4">
+              </motion.h3>
+              <motion.p
+                className="text-blue-400 mb-6 text-lg"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.9 }}
+              >
                 Works with minified JSON, escaped JSON strings, or any messy
                 JSON format
-              </p>
-              <div className="text-xs sm:text-sm text-blue-300 space-y-1">
-                <p>Examples:</p>
-                <code className="block bg-gray-950 p-1 sm:p-2 rounded text-xs border border-blue-900 text-blue-100">
+              </motion.p>
+              <motion.div
+                className="text-sm text-blue-300 space-y-3"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.1 }}
+              >
+                <p className="font-semibold">Examples:</p>
+                <motion.code
+                  className="block bg-gray-950/70 backdrop-blur-sm p-4 rounded-xl text-sm border border-blue-900/50 text-blue-100 font-mono"
+                  whileHover={{ scale: 1.02 }}
+                >
                   {`{"name":"John","age":30,"city":"New York"}`}
-                </code>
-                <code className="block bg-gray-950 p-1 sm:p-2 rounded text-xs border border-blue-900 text-blue-100">
+                </motion.code>
+                <motion.code
+                  className="block bg-gray-950/70 backdrop-blur-sm p-4 rounded-xl text-sm border border-blue-900/50 text-blue-100 font-mono"
+                  whileHover={{ scale: 1.02 }}
+                >
                   {`"{\\"message\\":\\"Hello World\\",\\"status\\":\\"success\\"}"`}
-                </code>
-              </div>
-            </div>
+                </motion.code>
+              </motion.div>
+            </motion.div>
           )}
-        </div>
+        </motion.div>
       </div>
       <Footer />
     </div>

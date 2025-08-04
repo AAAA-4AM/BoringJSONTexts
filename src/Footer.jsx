@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 export default function Footer() {
   return (
     <motion.footer
-      className="py-4 px-2 sm:px-8 flex flex-col md:flex-row items-center md:justify-between gap-4 md:gap-6 bg-gradient-to-r from-gray-900 via-blue-950 to-gray-800 text-gray-300 border-t border-indigo-800 w-full"
+      className="py-4 px-2 sm:px-8 flex flex-col md:flex-row items-center md:justify-between gap-4 md:gap-6 bg-gradient-to-r via-gray-900 to-indigo-950 from-blue-950 text-gray-300 border-t border-blue-600/70 w-full"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay: 0.5, duration: 0.5 }}
@@ -15,7 +15,7 @@ export default function Footer() {
           href="/"
           className="font-bold text-blue-400 hover:underline text-base sm:text-lg"
         >
-          Boring JSON Texts
+          JSONMorph
         </a>
         <span className="hidden sm:inline text-gray-500">|</span>
         <div className="text-xs text-gray-300 sm:text-right w-full sm:w-auto mt-1 sm:mt-0">

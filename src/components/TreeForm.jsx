@@ -1,94 +1,118 @@
-import { div } from "framer-motion/client";
+// Format value for display
+const formatValue = (val) => {
+  if (val === null) return "null";
+  if (typeof val === "string") return `"${val}"`;
+  return String(val);
+};
 
-const JsonTreeView = ({ data }) => {
-  if (!data || typeof data !== "object") return null;
+// Get color based on value type
+const getValueColor = (val) => {
+  if (val === null) return "text-gray-400";
+  switch (typeof val) {
+    case "string":
+      return "text-green-300";
+    case "number":
+      return "text-yellow-300";
+    case "boolean":
+      return "text-purple-300";
+    default:
+      return "text-gray-300";
+  }
+};
 
-  // Tree node component to recursively render JSON structure
-  const TreeNode = ({ label, value, depth = 0, isLast = false }) => {
-    const isObject = value !== null && typeof value === "object";
-    const isArray = Array.isArray(value);
+const TreeForm = ({ label, value, level = 0, isLast = false }) => {
+  // attributes for every node
+  const isObject = value != null && typeof value === "object";
+  const isArray = Array.isArray(value);
 
-    // Calculate indent based on depth
-    const indent = depth * 16;
-
-    return (
-      <div className="relative" style={{ marginLeft: `${indent}px` }}>
-        {/* Vertical line connecting to parent (except for root) */}
-        {depth > 0 && (
-          <div
-            className="absolute border-l-2 border-indigo-500/50 border h-full"
-            style={{ left: "-16px", top: "0" }}
-          />
-        )}
-
-        {/* Horizontal line connecting to node */}
-        {depth > 0 && (
-          <div
-            className="absolute border-t-2 border-indigo-500/50 w-4"
-            style={{ left: "-16px", top: "12px" }}
-          />
-        )}
-
-        <div className="flex items-start py-1">
-          {/* Node Content */}
-          <div
-            className={`rounded-md px-3 py-1 ${
-              isObject ? "bg-blue-900/30" : "bg-purple-900/30"
-            } border border-blue-700/50`}
-          >
-            {/* Label */}
-            <span className="font-mono text-sm font-medium text-blue-300">
-              {label}
-              {" :"}
-            </span>
-
-            {/* Value display for primitives */}
-            {!isObject ? (
-              <span
-                className={`ml-2 font-mono text-sm ${
-                  value === null
-                    ? "text-gray-400"
-                    : typeof value === "string"
-                    ? "text-green-300"
-                    : typeof value === "number"
-                    ? "text-yellow-300"
-                    : typeof value === "boolean"
-                    ? "text-purple-300"
-                    : "text-gray-300"
-                }`}
-              >
-                {value === null
-                  ? "null"
-                  : typeof value === "string"
-                  ? `"${value}"`
-                  : String(value)}
-              </span>
-            ) : (
-              <span className="ml-2 font-mono text-xs text-indigo-400">
-                {isArray ? "[ ]" : "{ }"}
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Render children for objects and arrays */}
-        {isObject &&
-          Object.entries(value).map(([key, val], index, arr) => (
-            <TreeNode
-              key={key}
-              label={isArray ? `[${key}]` : key}
-              value={val}
-              depth={depth + 1}
-              isLast={index === arr.length - 1}
-            />
-          ))}
-      </div>
-    );
-  };
+  const size = isArray ? value.length : Object.keys(value).length;
 
   return (
-    <div className="bg-gray-950/50 rounded-lg border border-blue-900 p-4 overflow-auto max-h-full">
-      <div className="pl-4">
+    <div className="flex-row flex h-full items-center justify-start">
+      {/* connector for top node */}
+      {level > 0 && <div className="w-0 h-0.5 mx-auto bg-blue-400" />}
+      {/* root node */}
+      {level === 0 && (
+        <div
+          className={` ${
+            isObject ? "bg-blue-900/70" : "bg-purple-900/40"
+          } text-center w-fit px-3 py-2 my-auto bg-blue-950 border border-blue-400 rounded-lg`}
+        >
+          {`${label} : ${isArray ? "[ ]" : "{ }"}`}
+          <span className="text-yellow-400/80 text-xs ml-2">
+            {isObject && `(${Object.keys(value).length})`}
+          </span>
+        </div>
+      )}
+
+      {level > 0 && (
+        <>
+          {/* Vertical connection line from parent */}
+          <div className="absolute left-0 top-0 w-0.5 bg-blue-500/50 h-full" />
+
+          {/* Horizontal connection line to node */}
+          <div className="absolute left-0 top-4 h-0.5 bg-blue-500/50 w-6" />
+
+          {/* End cap for last child node */}
+          {isLast && (
+            <div className="absolute left-0 top-4 w-0.5 bg-gray-950/50 h-[calc(100%-16px)]" />
+          )}
+        </>
+      )}
+
+      {/* Node content */}
+      <div className="flex flex-col">
+        {/* Node header */}
+        <div
+          className={`
+          rounded-lg px-3 py-2 mb-1 inline-block
+          ${isObject ? "bg-blue-900/40" : "bg-purple-900/40"} 
+          border border-blue-700/50
+          max-w-max
+        `}
+        >
+          {/* Label with type indicator */}
+          <span className="font-mono text-blue-300 font-medium">{label}</span>
+          <span className="text-blue-400 mx-1">:</span>
+
+          {/* Value or type indicator */}
+          {isObject ? (
+            <span className="font-mono text-indigo-400 text-sm">
+              {isArray ? "[ ]" : "{ }"}
+              <span className="text-blue-500 text-xs ml-1">
+                {isObject && `(${Object.keys(value).length})`}
+              </span>
+            </span>
+          ) : (
+            <span className={`font-mono ${getValueColor(value)}`}>
+              {formatValue(value)}
+            </span>
+          )}
+        </div>
+
+        {/* Children nodes */}
+        {isObject && Object.keys(value).length > 0 && (
+          <div className="ml-2">
+            {Object.entries(value).map(([key, val], index, arr) => (
+              <TreeForm
+                key={key}
+                label={isArray ? `[${key}]` : key}
+                value={val}
+                level={level + 1}
+                isLast={index === arr.length - 1}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const JsonTreeView = ({ data }) => {
+  return (
+    <div className="bg-gray-950/50 rounded-lg border border-blue-900 p-4 overflow-auto h-full">
+      <div className="pl-4 h-full">
         {/* <TreeNode label="root" value={data} /> */}
         <TreeForm label="root" value={data} />
       </div>
@@ -96,7 +120,9 @@ const JsonTreeView = ({ data }) => {
   );
 };
 
-const TreeForm = ({ label, value, level = 0, isLast = false }) => {
+export default JsonTreeView;
+
+const OldTreeForm = ({ label, value, level = 0, isLast = false }) => {
   // attributes for every node
   const isObject = value != null && typeof value === "object";
   const isArray = Array.isArray(value);
@@ -109,21 +135,35 @@ const TreeForm = ({ label, value, level = 0, isLast = false }) => {
       {level > 0 && <div className="w-0.5 h-8 mx-auto bg-blue-400" />}
       {/* root node */}
       {level === 0 && (
-        <div className="text-center w-fit px-3 py-2 mx-auto bg-blue-900 border border-blue-400 rounded-lg">
+        <div
+          className={` ${
+            isObject ? "bg-blue-900/70" : "bg-purple-900/40"
+          } text-center w-fit px-3 py-2 mx-auto bg-blue-950 border border-blue-400 rounded-lg`}
+        >
           {`${label} : ${isArray ? "[ ]" : "{ }"}`}
+          <span className="text-yellow-400/80 text-xs ml-2">
+            {isObject && `(${Object.keys(value).length})`}
+          </span>
         </div>
       )}
-      {!isArray && level > 0 && (
+      {level > 0 && (
         <div className="flex flex-col items-center justify-center max-w-fit min-w-fit mx-auto border border-blue-400 rounded-lg">
           <div
-            className={`w-full bg-blue-950 text-center ${
+            className={`w-full text-center ${
               typeof value !== "object" ? "rounded-t-lg" : "rounded-lg"
-            } px-3 py-2`}
+            } ${isObject ? "bg-blue-900/70" : "bg-indigo-800/40"} px-3 py-2`}
           >
-            {label}
+            {label}{" "}
+            <span className="text-orange-400 text-xs ml-1">
+              {isObject && `(${Object.keys(value).length})`}
+            </span>
           </div>
           {typeof value !== "object" && (
-            <div className="w-full bg-blue-900 rounded-b-lg px-3 py-2 border-t border-t-blue-400 text-center">
+            <div
+              className={`w-full ${getValueColor(
+                value
+              )} bg-blue-950 rounded-b-lg px-3 py-2 border-t border-t-blue-400 text-center`}
+            >
               {JSON.stringify(value)}
             </div>
           )}
@@ -135,13 +175,7 @@ const TreeForm = ({ label, value, level = 0, isLast = false }) => {
       )}
       {/* render vertical connector for child node */}
       {isObject && !isLast && size > 1 && (
-        <div
-          className="h-0.5 bg-blue-400 w-full relative"
-          // style={{
-          //   marginLeft: "calc(50% - 0.5rem)",
-          //   marginRight: "0",
-          // }}
-        />
+        <div className="h-0.5 bg-blue-400 w-full relative" />
       )}
       {isObject && (
         <div className="flex flex-row w-full gap-4 justify-between">
@@ -160,5 +194,3 @@ const TreeForm = ({ label, value, level = 0, isLast = false }) => {
     </div>
   );
 };
-
-export default JsonTreeView;
