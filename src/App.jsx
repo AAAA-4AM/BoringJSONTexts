@@ -3,7 +3,7 @@ import "./App.css"; // Assuming you have a CSS file for styles
 import Footer from "./Footer";
 
 import GoToTopButton from "./components/GoToTopButton";
-import JsonTreeView from "./components/JsonTreeView";
+import JsonTreeView from "./components/TreeForm";
 import { Copy, Check, Minimize2, Expand, X, ArrowUpToLine } from "lucide-react";
 
 const App = () => {
@@ -138,7 +138,7 @@ const App = () => {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   // State for graph visualization toggle
-  const [showGraph, setShowGraph] = React.useState(false);
+  const [showGraph, setShowGraph] = React.useState(true);
 
   return (
     <div className="App">
@@ -341,8 +341,6 @@ const App = () => {
                 </div>
               </div>
 
-              {/* <TreeForm /> */}
-
               {/* JSON Tree Visualization as right-side panel */}
               {showGraph && formattedText.isValidJSON && (
                 <div>
@@ -353,7 +351,7 @@ const App = () => {
                       onClick={() => setShowGraph(false)}
                     />
                     <button
-                      className="px-3 z-100 absolute top-6 not-md:right-10 md:left-10 py-2 hover:top-5 hover:py-3 hover:rounded-4xl bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-semibold shadow transition-all ease text-sm flex items-center gap-1"
+                      className="px-3 z-100 absolute top-5 not-md:right-10 md:left-10 py-2 hover:top-4 hover:py-3 hover:rounded-4xl bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-semibold shadow transition-all ease text-sm flex items-center gap-1"
                       onClick={() => setShowGraph(false)}
                       aria-label="Close Tree Visualization"
                     >
